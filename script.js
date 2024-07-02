@@ -95,14 +95,48 @@ const displayMovement = function(movements){
 
 const calcDisplayBal = (movements) =>{
   const balance = movements.reduce((acc, mov) => acc +mov, 0)
-  labelBalance.textContent = `${balance}N`
+  labelBalance.textContent = `${balance}€`
 }
 
-calcDisplayBal(account5.movements)
+calcDisplayBal(account1.movements)
+
+const calcDisplaySummary = (movements) => {
+
+  // For the money coming in
+  const  incomes = movements
+  .filter(mov => mov > 0)
+  .reduce((acc, mov) => acc + mov , 0)
+
+  labelSumIn.textContent = `${incomes}€`
 
 
+//  For the Out going money
+  const outcomes = movements
+  .filter(mov => mov < 0)
+  .reduce((acc, mov) => acc + mov, 0)
+
+  labelSumOut.textContent = `${Math.abs(outcomes)}€`
+
+  // For the interest
+  const interest = movements
+  .filter(mov => mov > 0)
+  .map( (deposit)  => deposit * 1.2 / 100)
+  .filter((int, i, arr) =>{
+    console.log(arr);
+    return int >= 1;
+  })
+  .reduce((acc, int) =>acc + int , 0)
+  
+labelSumInterest.textContent = `${interest}€`
+
+
+}
+
+calcDisplaySummary(account5.movements)
 displayMovement(account5.movements)
-// console.log(displayMovement(account5.movements));
+console.log(displayMovement(account1.movements));
+
+console.log(containerMovements.innerHTML);
 
 // console.log(containerMovements.innerHTML);
 
@@ -119,6 +153,8 @@ const createUsernames = (accs) =>{
 }
 
 createUsernames(accounts);
+
+
 
 
 // Filter Method
@@ -157,6 +193,57 @@ const currencies = new Map([
   ['GBP', 'Pound sterling'],
   ['Naira', 'Nigeria Naira']
 ]);
+
+
+
+console.log(accounts);
+
+const account = accounts.find(acc => acc.owner === 'Akinola Fawaz')
+
+console.log(account);
+
+// for (acc of accounts){
+//   if (accc.owner === "Akinola Fawaz"){
+//     console.log(acc);
+//   }
+// }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 /////////////////////////////////////////////////
@@ -341,14 +428,18 @@ TEST DATA 1: [5, 2, 4, 1, 15, 8, 3]
 TEST DATA 2: [16, 6, 10, 5, 6, 1, 4]
 */
 
-const calcHumanDogAge = (dogs) => {
-  const humanAge = dogs.map((dog)=> dog<2? dog*2: 16+dog*4)
-  const adultDog = humanAge.filter(dog => dog >= 18)
-  console.log(humanAge);
-  console.log(adultDog);
+// const calcHumanDogAge = (dogs) => {
+//   const humanAge = dogs.map((dog)=> dog<2? dog*2: 16+dog*4)
+//   console.log(humanAge);
 
-  const dogCumAge = adultDog.reduce((acc, dog)=> acc + dog, 0)
+//   const adultDog = humanAge.filter(dog => dog >= 18)
+//   console.log(adultDog);
 
-  console.log(dogCumAge);
-}
-calcHumanDogAge([5, 2, 4, 1, 15, 8, 3], [16, 6, 10, 5, 6, 1, 4])
+//   const dogCumAge = adultDog.reduce((acc, dog, i, arr)=> acc + dog / arr.length, 0)
+
+//   console.log(dogCumAge);
+// }
+// calcHumanDogAge([5, 2, 4, 1, 15, 8, 3], [16, 6, 10, 5, 6, 1, 4])
+
+const eurToUsd = 1.1
+movements.filter(mov => mov > 0).map(mov => mov * eurToUsd).reduce((acc, mov)=> acc + mov)
