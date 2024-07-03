@@ -72,6 +72,7 @@ const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
 
 // console.log(movements);
 
+// Implementing The depos/withdrawer display
 const displayMovement = function(movements){
 
   containerMovements.innerHTML = '';
@@ -100,10 +101,10 @@ const calcDisplayBal = (movements) =>{
 
 calcDisplayBal(account1.movements)
 
-const calcDisplaySummary = (movements) => {
+const calcDisplaySummary = (acc) => {
 
   // For the money coming in
-  const  incomes = movements
+  const  incomes = acc.movements
   .filter(mov => mov > 0)
   .reduce((acc, mov) => acc + mov , 0)
 
@@ -111,16 +112,16 @@ const calcDisplaySummary = (movements) => {
 
 
 //  For the Out going money
-  const outcomes = movements
+  const outcomes = acc.movements
   .filter(mov => mov < 0)
   .reduce((acc, mov) => acc + mov, 0)
 
   labelSumOut.textContent = `${Math.abs(outcomes)}€`
 
   // For the interest
-  const interest = movements
+  const interest = acc.movements
   .filter(mov => mov > 0)
-  .map( (deposit)  => deposit * 1.2 / 100)
+  .map( (deposit)  => deposit * acc.interestRate / 100)
   .filter((int, i, arr) =>{
     console.log(arr);
     return int >= 1;
@@ -132,9 +133,9 @@ labelSumInterest.textContent = `${interest}€`
 
 }
 
-calcDisplaySummary(account5.movements)
-displayMovement(account5.movements)
-console.log(displayMovement(account1.movements));
+// calcDisplaySummary(account5.movements)
+// displayMovement(account5.movements)
+// console.log(displayMovement(account1.movements));
 
 console.log(containerMovements.innerHTML);
 
@@ -153,6 +154,40 @@ const createUsernames = (accs) =>{
 }
 
 createUsernames(accounts);
+
+
+let currentAccount
+// Event listener
+btnLogin.addEventListener('click', (e)=>{
+  e.preventDefault()
+  currentAccount = accounts.find(acc => acc.username === inputLoginUsername.value)
+
+  console.log(currentAccount);
+
+  if (currentAccount?.pin === Number(inputLoginPin.value)){
+    // console.log("Login");
+    // DIsplay Ui and a welcome message
+    labelWelcome.textContent = `Welcome back, ${currentAccount.owner.split(' ') [0]}`
+    containerApp.style.opacity = 100
+
+    // Clear input screen
+
+    inputLoginUsername.value = inputLoginPin.value = ''
+    inputLoginPin.blur()
+    // display movement
+    displayMovement(currentAccount.movements)
+
+    // Display summary
+    calcDisplaySummary(currentAccount)
+
+    //Display Balance
+    calcDisplayBal(currentAccount.movements)
+
+    // Display summary
+    // calcDisplaySummary(currentAccount.movements)
+  }
+})
+
 
 
 
