@@ -166,9 +166,12 @@ const updateUi = (acc)=> {
       calcDisplayBalance(acc)
   
 }
-
+// /////////////////////////////////////////////////////////////////////////////////
 let currentAccount
+// ////////////////////////////////////////////////////////////////////////////////
 // Event listener
+
+
 btnLogin.addEventListener('click', (e)=>{
   e.preventDefault()
   currentAccount = accounts.find(acc => acc.username === inputLoginUsername.value)
@@ -216,7 +219,33 @@ btnTransfer.addEventListener('click', (e)=>{
     }
 })
 
+btnClose.addEventListener('click', (e)=>{
+  e.preventDefault()
 
+
+  if( inputCloseUsername.value === currentAccount.username && 
+    Number(inputClosePin.value) === currentAccount.pin ){
+
+      const index = accounts.findIndex(
+        acc => acc.username === currentAccount.username  
+        )
+        console.log(index);
+
+
+        // delete Account
+      accounts.splice(index, 1)
+
+      
+        // hideUI
+        containerApp.style.opacity = 0
+      // .indexOf(23)
+  }
+   
+
+  inputClosePin.value = inputCloseUsername.value = ''
+
+
+})
 
 
 // Filter Method
@@ -505,3 +534,12 @@ TEST DATA 2: [16, 6, 10, 5, 6, 1, 4]
 
 const eurToUsd = 1.1
 movements.filter(mov => mov > 0).map(mov => mov * eurToUsd).reduce((acc, mov)=> acc + mov)
+
+// Include methode
+
+// To check for equality
+console.log(movements.includes(-130))
+console.log(movements.some(acc => acc === -130));
+
+// Check for Condition and check for many stament
+const anyDeposits =  movements.some(mov => mov > 0)
