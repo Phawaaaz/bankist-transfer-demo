@@ -73,11 +73,14 @@ const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
 // console.log(movements);
 
 // Implementing The depos/withdrawer display
-const displayMovement = function(movements){
+const displayMovement = (movements, sort = false) => {
+
+
+  const movs = sort? movements.slice().sort((a, b) => a-b) : movements
 
   containerMovements.innerHTML = '';
 
-  movements.forEach((mov, i) => {
+  movs.forEach((mov, i) => {
 
     const type = mov> 0? 'deposit': 'withdrawal';
     
@@ -101,7 +104,7 @@ const calcDisplayBalance =  (acc) => {
 
 // calcDisplayBalance(accounts)
 
-const calcDisplaySummary = (acc) => {
+const calcDisplaySummary = (acc ) => {
 
   // For the money coming in
   const  incomes = acc.movements
@@ -219,6 +222,25 @@ btnTransfer.addEventListener('click', (e)=>{
     }
 })
 
+
+btnLoan.addEventListener('click', (e)=>{
+  e.preventDefault()
+  const amount = Number(inputLoanAmount.value)
+
+  if (amount > 0 && currentAccount.movements.some(mov => 
+    mov >= amount * 0.1)){
+      // add movement
+      currentAccount.movements.push(amount)
+
+      // updateUi
+      updateUi(currentAccount)
+
+      inputLoanAmount.value = ' '
+    }else{
+      alert('Insufficient funds')
+    }
+} )
+
 btnClose.addEventListener('click', (e)=>{
   e.preventDefault()
 
@@ -246,7 +268,15 @@ btnClose.addEventListener('click', (e)=>{
 
 
 })
+let sorted = false
 
+btnSort.addEventListener('click', (e)=>{
+  e.preventDefault()
+
+  displayMovement(currentAccount, !sorted)
+  sorted = !sorted
+
+})
 
 // Filter Method
 
@@ -301,27 +331,50 @@ console.log(account);
 
 
 
+const arr = [[1,2,3], [4,5,6], 7,9]
+console.log(arr.flat())
+
+const arrDeep = [[[ 1 , 2 ] , 3 ] , [ 4 , [ 5 , 6 ]  ], 7, 9]
+console.log(arrDeep.flat())
+
+// const accountsMovements = accounts.map(acc => acc.movements)
+// const allMovement = accountsMovements.flat()
+
+// const overallMovement = allMovement.reduce ((acc, mov)=> acc + mov, 0)
+// console.log(overallMovement);
+// console.log(allMovement);
+// console.log(accountsMovements);
+
+// Flat
+const overralBalance = accounts.map(acc => acc.movements)
+.flat()
+.reduce ((acc, mov)=> acc + mov, 0)
 
 
 
+// Flatmap
+const overralBalanced = accounts.flatMap(acc => acc.movements)
+.reduce ((acc, mov)=> acc + mov, 0)
 
 
+// Sorting Array
 
+const owner = ['Jonas', 'Zach', 'Adam', 'Matha', 'Fawaz']
+console.log(owner.sort())
 
+// REturn < 0 A, B (keep order)
+// Return > 0 B, A (Switch order)
 
+// Assending
+movements.sort((a,b) => a-b )
 
+// Desending
+movements.sort((a,b) =>{
+  if (a > b) return -1
+  if (a < b) return 1
+})
 
-
-
-
-
-
-
-
-
-
-
-
+movements.sort((a,b) => b-a )
 
 
 
