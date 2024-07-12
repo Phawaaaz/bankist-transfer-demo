@@ -124,10 +124,7 @@ const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
     if (daysPassed === 1)return 'Today'
     if (daysPassed <= 7)return `${daysPassed} days ago`
 
-    //   const day = `${date.getDate()}`.padStart(2 , 0)
-    //   const month = `${date.getMonth() + 1}`.padStart(2 , 0)
-    //   const year = `${date.getFullYear()}`.padStart(2 , 0)
-    // return `${day}/${month}/${year}`
+
     return new Intl.DateTimeFormat(locale).format(date);
     }
 
@@ -161,7 +158,7 @@ const displayMovement = (acc, sort = false) => {
     console.log(date);
 
 
-    const calcDaysPassed = (date1, date2)=> Math.abs((date2 - date1) / (1000 *60 *60 *24))
+    // const calcDaysPassed = (date1, date2)=> Math.abs((date2 - date1) / (1000 *60 *60 *24))
     
 
     const formattedMov = formatCur(mov, acc.locale, acc.currency)
@@ -225,7 +222,7 @@ labelSumInterest.textContent = formatCur(Math.abs(interest), acc.locale, acc.cur
 // displayMovement(account5.movements)
 // console.log(displayMovement(account1.movements));
 
-console.log(containerMovements.innerHTML);
+// console.log(containerMovements.innerHTML);
 
 // console.log(containerMovements.innerHTML);
 
@@ -247,22 +244,57 @@ const updateUi = (acc)=> {
       // display movement
       displayMovement(acc)
 
-      // Display summary
-      calcDisplaySummary(acc)
-  
       //Display Balance
       calcDisplayBalance(acc)
-  
+
+      // Display summary
+      calcDisplaySummary(acc)
 }
+
+// Creating Timer functionality
+const startLogoutCountdown = () => {
+  const tick = () => {
+    // Create second to be cnvert to
+    const min =String(Math.trunc(time / 60)).padStart(2, 0)
+    const sec = String(time % 60).padStart(2, 0)
+
+    // In each call print the remain time to the interface
+    labelTimer.textContent = `${min}:${sec}`;
+
+   
+    // console.log(time);
+// When timer reach 0 then log out
+
+    if (time === 0){
+      clearInterval(Timer)
+      labelWelcome.textContent = 'Log in to get started '
+      containerApp.style.opacity = 0
+      console.log(time);
+    }
+
+     // Decrease 1s 
+     time--
+  
+  }
+
+  // Set Time to 5 mins
+  let time = 120
+
+  // Call the timer Every second
+  tick()
+  const Timer = setInterval (tick  , 1000)
+  return Timer
+
+  }
 // /////////////////////////////////////////////////////////////////////////////////
-let currentAccount
+let currentAccount , Timer
 // ////////////////////////////////////////////////////////////////////////////////
 // Event listener
 
 // Fake Alway Logged in
-currentAccount = account1
-updateUi(currentAccount)
-containerApp.style.opacity = 100
+// currentAccount = account1
+// updateUi(currentAccount)
+// containerApp.style.opacity = 100
 
 // Experimenting date Api
 
@@ -278,14 +310,7 @@ btnLogin.addEventListener('click', (e)=>{
     labelWelcome.textContent = `Welcome back, ${currentAccount.owner.split(' ') [0]}`
     containerApp.style.opacity = 100
 
-    // To Display Current Date
-    //  const now = new Date()
-      // const day = `${now.getDate()}`.padStart(2 , 0)
-      // const month = `${now.getMonth() + 1}`.padStart(2 , 0)
-      // const year = `${now.getFullYear()}`.padStart(2 , 0)
-      // const hour = `${now.getHours()}`.padStart(2 , 0)
-      // const min = `${now.getMinutes()}`.padStart(2 , 0)
-      // labelDate.textContent = `${day}/${month}/${year}, ${hour}:${min}`
+
       const now = new Date()
       const option = {
           hour: 'numeric',
@@ -295,9 +320,9 @@ btnLogin.addEventListener('click', (e)=>{
           month: "long",
           year: 'numeric',
         }
-const locale = navigator.language
-console.log(locale);
-labelDate.textContent = new Intl.DateTimeFormat(currentAccount.locale, option).format(now )
+        // const locale = navigator.language
+        // console.log(locale);
+        labelDate.textContent = new Intl.DateTimeFormat(currentAccount.locale, option).format(now )
 
 
 
@@ -305,6 +330,11 @@ labelDate.textContent = new Intl.DateTimeFormat(currentAccount.locale, option).f
 
     inputLoginUsername.value = inputLoginPin.value = ''
     inputLoginPin.blur()
+
+    // timer
+    if(Timer) clearInterval(Timer)
+
+   Timer =  startLogoutCountdown()
 
     updateUi(currentAccount)
     // Display summary
@@ -338,6 +368,8 @@ btnTransfer.addEventListener('click', (e)=>{
 
 
       updateUi(currentAccount)
+      clearInterval(Timer)
+      Timer = startLogoutCountdown()
     }else{
       alert('Insufficient Fund')
     }
@@ -350,17 +382,24 @@ btnLoan.addEventListener('click', (e)=>{
 
   if (amount > 0 && currentAccount.movements.some(mov => 
     mov >= amount * 0.1)){
+
+      setTimeout(()=> {
+          currentAccount.movements.push(amount)
+
+        // Add loan date 
+        currentAccount.movementsDates.push(new Date().toISOString())
+
+
+        // updateUi
+        updateUi(currentAccount)
+        clearInterval(Timer)
+        Timer = startLogoutCountdown()
+      }, 3000)
       // add movement
-      currentAccount.movements.push(amount)
-
-      // Add loan date 
-      currentAccount.movementsDates.push(new Date().toISOString())
-
-
-      // updateUi
-      updateUi(currentAccount)
+    
 
       inputLoanAmount.value = ' '
+
     }else{
       alert('Insufficient funds')
     }
@@ -404,25 +443,6 @@ btnSort.addEventListener('click', (e)=>{
   sorted = !sorted
 
 })
-
-// Filter Method
-
-const deposit = movements.filter(mov =>mov > 0)
-
-// console.log(deposit);
-// console.log(accounts);
-
-const withdrawal = movements.filter(mov => mov < 0)
-
-// console.log(withdrawal);
-
-
-// Reduce Method
-
-const balance = movements.reduce((acc, cur) => acc + cur, 0)
-
-console.log(balance); 
-// Maximum value of the array using the string
 
 
 
